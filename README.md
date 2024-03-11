@@ -1,7 +1,9 @@
 Virtual machine: 
 http://ml-lab-4d78f073-aa49-4f0e-bce2-31e5254052c7.ukwest.cloudapp.azure.com:61103/index.php
 
-Run in chrome
+Run in chrome:
+•	In terminal, **php -S localhost:8000 -ECM1417/**, to set up the server
+•	Run, **http://localhost:8000/index.php**, in browser
 
 index.php
 •	Link to register session (registration.php) if session not set
