@@ -56,6 +56,7 @@
         
             <script>
                 var sessionValid = '<?= isset($_SESSION["name"])?>';
+                //if there is a valid session, adding the users profile image (stored in local storage) to the navbar 
                 if (sessionValid) {
                     var dataImage = new Image();
                     dataImage.src = localStorage.getItem('imgData');
@@ -68,6 +69,7 @@
         
 			<li><a href="pairs.php" name="memory">Play Pairs</a></li>
             <?php        
+            //if the session is valid, allowing the user to access the leaderboard, and if not, allowing the user to register
             if(isset($_SESSION["name"])) {
 	        echo '<li><a href="leaderboard.php" name="leaderboard">Leaderboard</a></li>';
             } else {
@@ -77,7 +79,6 @@
             </div>					
 		</ul>
         <div class = "navbar-Avatar">
-        <!--<img src = "emoji assets/skin/green.png" name = "Avatar">-->
         </div>
     </body>
 </html>

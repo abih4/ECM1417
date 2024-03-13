@@ -1,8 +1,8 @@
 <?php
+//opening and reading the file storing the scores for the leaderboard
 $scoreFile = fopen("scores.txt", "r");
 $filesize = filesize("scores.txt");
 $filetext = fread($scoreFile, $filesize);
-//echo $filetext;
 fclose($scoreFile);
 ?>
 <!DOCTYPE html>
@@ -38,9 +38,13 @@ fclose($scoreFile);
                     </tbody>
                 </table>
                 <script>
+                    //filling in the table with the current user details
+                    //getting the username stored in the session
                     var username = sessionStorage.getItem("name");
+                    //getting the points stored in the cookie
                     var cookieValue = document.cookie.split("; ").find((row) => row.startsWith("name="))?.split("=")[1];
                     var points = cookieValue.split(",");
+                    //getting the table elements and inserting the data
                     var table = document.getElementById("leaderboard");
                     var row = table.insertRow(-1);
                     var cellUsername = row.insertCell(0);
@@ -77,12 +81,14 @@ fclose($scoreFile);
                     var cellEmpty10 = row1.insertCell(9);
                     var cellEmpty11 = row1.insertCell(10);
                     var cellEmpty12 = row1.insertCell(11);
+                    //getting the score data from the file, and storing each score for each person in an array levelScores
                     var php_fileText = "<?php echo $filetext; ?>";
                     var people = php_fileText.split("!");
                     var levelScores = [];
                     for (const person of people) {
                         levelScores.push(person);
                     }
+                    //putting the scores found above into the table displayed
                     var num = 0;
                     for (const item of levelScores) {
                         if (num < 10) {
@@ -90,10 +96,11 @@ fclose($scoreFile);
                             console.log(scoreWithoutLevel);
                             var username = scoreWithoutLevel.split(":")[0];
                             var points = scoreWithoutLevel.split(":")[1];
-                            var pointsArray = points.split(",");
+                            var pointsArray = points.split(","); //splitting the points for each level
                             var row2 = table.insertRow(-1);
                             var cellUsername1 = row2.insertCell(0);
-                            cellUsername1.innerHTML = username;
+                            cellUsername1.innerHTML = username; //inserting the username
+                            //inserting all the points
                             for (var j = 1; j < 11; j++) {
                                 var cell1 = row2.insertCell(j);
                                 if (j < pointsArray.length) {

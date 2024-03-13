@@ -14,6 +14,7 @@
         </form>
             <?php 
             echo '<br>';
+            //checking if username has been entered and stores the value
             if (isset($_POST['username'])) {
                 $name = $_POST["username"];
             } else {
@@ -21,17 +22,20 @@
             }
             ?>
             <script type="text/javascript"> 
+                //printing name on screen
                 var name = "<?php echo $name; ?>";
             </script>
             <?php
             if (isset($_POST['username'])) {
                 $error = false;
                 if(empty($name)) {
+                    //producing an error so user needs to re-enter details
                     $error = true;
                     echo '<div class = "noInput">
                     <br>(Please enter a username)<br></div>';
                 }
                 if (preg_match("/[!\@\#\%\&\*\(\)\+\=\{\}\[\]\-\;\:\"\'\<\>\?\/]/", $name)) {
+                    //producing an error so user needs to re-enter details
                     $error = true;
                     echo '<div class = "noInput">
                     <br>(The username must not contain any invalid characters: !@#%&*()+={}[]-;:\"\'<>?)<br></div>';
@@ -40,10 +44,11 @@
                 if (!$error) {
                     session_start();
                     $_SESSION["name"] = $name;
-                    setcookie("name", 0);
+                    setcookie("name", 0); //setting initial cookie
                     echo '<script type="text/javascript"> 
                             //var name = "<?php echo $name; ?>";
                             //var name = $name;
+                            //setting the session 
                             sessionStorage.setItem("name", name); </script>';
                     echo '<div class = "cookies"> 
                     <br>Session and cookie created! <br>
@@ -128,6 +133,7 @@
             window.addEventListener("keydown", AvatarCreator);
             function AvatarCreator(event) {
                 if (event.key == "Enter") {
+                    //the user has selected the avatar
                     let skinImage = document.querySelectorAll('[name = Skin]')[0];
                     let eyeImage = document.querySelectorAll('[name = Eyes]')[0];
                     let mouthImage = document.querySelectorAll('[name = Mouth]')[0];
@@ -152,6 +158,7 @@
                         return dataURL;
                     }
 
+                    //user can start game
                     var pairsLink = document.createElement('a'); 
                     var link = document.createTextNode("Start game");
                     pairsLink.appendChild(link); 

@@ -12,11 +12,12 @@
             if($scoreFile == false) {
                 echo ("Error in opening new file");
                 }
-            $level = count(explode(",", $_COOKIE["name"])) - 1;
-            $scoreToBeAdded = $level. ">" . $_SESSION['name'] . ":" . $_COOKIE["name"] . "!";
+            $level = count(explode(",", $_COOKIE["name"])) - 1; //getting the maximum level the user reached (stored in cookie)
+            //creating string to store in file - using symbols to divide scores and users
+            $scoreToBeAdded = $level. ">" . $_SESSION['name'] . ":" . $_COOKIE["name"] . "!"; 
             fwrite($scoreFile, $scoreToBeAdded);
             fclose($scoreFile);
-            //reading file to check written to
+            //reading file to check written to 
             $scoreFile = fopen("scores.txt", "r");
             $filesize = filesize("scores.txt");
             $filetext = fread($scoreFile, $filesize);
@@ -31,7 +32,7 @@
         <title>Pairs game</title>
         <link rel="stylesheet" href="style.css">
         <?php include("navbar.php"); ?>
-        <link rel="shortcut icon" href="#">
+        <!--<link rel="shortcut icon" href="#">-->
     </head>
     <body>
         <div class = "main">
@@ -42,9 +43,11 @@
                 </div>
                 <script>
                     let playing = false;
+                    //adding an event listener to startGame button so will allow user to start playing
                     const startGame = document.getElementById('startGame');
                     startGame.addEventListener('click', RemoveButton);
                     function RemoveButton() {
+                        //starting the music and playing the game
                         var sound = new Audio("Tyler Twombly - Background Radiation.mp3");
                         sound.play();
                         playing = true;
@@ -70,7 +73,7 @@
                         level++;
                         var bestScores = ""; //string to store best scores after checking against previous scores
                         
-                        //checking background to gold if gotten to higher level than previously
+                        //making background gold if user has reached a higher level than previously
                         const previousLevelNum = document.cookie.split("; ").find((row) => row.startsWith("name="))?.split("=")[1].split(",").length - 1;
                         if (level > previousLevelNum) {
                             const pairsDiv = document.getElementById("pairs");
@@ -78,6 +81,7 @@
                         }
 
                         function generateCard() {
+                            //function to generate the cards for each level
                             const cardDiv = document.createElement("div");
                             cardDiv.setAttribute('class', "card");
                             cardDiv.setAttribute('name', "card");
@@ -99,9 +103,12 @@
                             const pairs = document.getElementsByClassName("pairs");
                             pairs[0].append(cardDiv);
                             numOfCards++;
-                        }                      
+                        }      
+                        //generating pairs of cards (start with 2 for all levels) 
+                        //adding two with each new level            
                         generateCard();
                         generateCard();
+
                         //shuffling cards so random cards presented
                         function shuffleCards(cards) {
                             for (const card of cards) {
@@ -109,7 +116,8 @@
                                 card.style.order = randNum;
                             }
                         }
-
+                        
+                        //setting the time for each level
                         if (level == 1) {
                             var interval = (numOfCards/4)*1000;
                         } else {
@@ -130,9 +138,9 @@
                                 clearInterval(timerID);
                                 clearInterval(displayPointsTimer);
                                 lostGame = true;
-                                totalPoints += points;
+                                totalPoints += points; //adding points to overall score
                                 var pointsWithComma = points + ",";
-                                pointsOverLevels += pointsWithComma;
+                                pointsOverLevels += pointsWithComma; //adding points to string to be stored in file later
                                 var cards = document.querySelectorAll('[name=card]');
                                 for (const card of cards.values()) {
                                     //stopping the user being able to turn over more cards if game is over
@@ -143,6 +151,7 @@
                                 endGame();
                             }
                             if (lostGame === false) {
+                                //checking if game has been lost if lostGame still false
                                 checkLost = setTimeout(lost, 100);
                             }
                         }, 100);
@@ -151,6 +160,7 @@
                         displayPointsTimer = setInterval(function() {
                             const pointsDisplayedPrevious = document.getElementsByTagName("h5");
                             if (pointsDisplayedPrevious.length == 2) {
+                                //removing the previous points
                                 pointsDisplayedPrevious[0].remove();
                                 pointsDisplayedPrevious[0].remove();
                             }
@@ -222,6 +232,7 @@
                                 Cards.push(card);
                             } else {
                                 Cards.push(card);
+                                //generating emoji images once a pair of cards has been created
                                 generateEmojiImages(Cards[0], Cards[1]);
                                 Cards = [];
                             }
@@ -236,9 +247,9 @@
                             })
                         }
                         
-
                         function flipCard(card) {
                             if (!card.classList.contains('flipped')) {
+                                //if the card hasn't been flipped already
                                 card.classList.add('flipped');
                                 card.classList.toggle("flipCard");
                                 let cardImage = card.getElementsByTagName("img");
@@ -248,7 +259,7 @@
                                     cardImages.push(cardImage[i].src);
                                 }
                                 setTimeout(function() {
-                                    checkMatching(card, cardImages);
+                                    checkMatching(card, cardImages); //check if match
                                 }, 1000); //allowing user to see cards before turning back over
                             }
                         }
@@ -258,6 +269,7 @@
                             var match = false;
                             for (const matchedCard in matchedCards) {
                                 if (matchedCard === cardImage) {
+                                    //if card is already in matched cards
                                     match = true;
                                 }
                             }
@@ -266,12 +278,15 @@
                                     var noMatchFlip = false;
                                     for (var i = 0; i < 3; i++) {
                                         //need to go up to 3, because 0 is front of card
+                                        //checking if any aspect of the image match - if no match on any element, then cards don't match
                                         if (flippedCardsImage[0][i] !== flippedCardsImage[1][i]) {
                                             noMatchFlip = true;
                                         }
                                     }
                                     if (noMatchFlip === false) {
+                                        //the cards match, and so form a pair - add to matchedCards
                                         matchedCards.push(cardImage);
+                                        //removing event listeners so cards can no longer be flipped
                                         flippedCards[0].removeEventListener('click', function() {
                                             flipCard(this);
                                         });
@@ -281,7 +296,9 @@
                                         flippedCards = [];
                                         flippedCardsImage = [];
                                     } else {
-                                        points++;
+                                        //the cards did not match
+                                        points++; 
+                                        //flipping cards back over
                                         flippedCards[0].classList.toggle("flipCard");
                                         flippedCards[0].classList.remove('flipped');
                                         flippedCards[1].classList.toggle("flipCard");
@@ -292,6 +309,7 @@
                                 }
                             }
                             if (matchedCards.length === numOfCards/2) {
+                                //found all the matched cards
                                 clearInterval(timerID);
                                 clearTimeout(checkLost);
                                 clearInterval(displayPointsTimer);
@@ -301,9 +319,10 @@
                             }
                         }
                         function endCurrentLevel() {
-                            totalPoints += points;
+                            totalPoints += points; 
                             var pointsWithComma = points + ",";
-                            pointsOverLevels += pointsWithComma;
+                            pointsOverLevels += pointsWithComma; //adding points to string to store in file later
+                            //displaying scores to user
                             const scoreLevel = document.createElement("div");
                             scoreLevel.setAttribute('class', "scoreLevel");
                             scoreLevel.setAttribute('id', 'scoreLevel');
@@ -330,6 +349,7 @@
                                 };
                                 scoreLevel.append(endGameButton);
                             } else {
+                                //allowing user to move to next level
                                 const nextLevelButton = document.createElement('button');
                                 nextLevelButton.innerText = 'Next Level';
                                 nextLevelButton.onclick = function() {
@@ -341,18 +361,21 @@
                             pairsDiv.appendChild(scoreLevel);
                         }
                         function nextLevel() {
+                            //moving to next level
                             const element = document.getElementById("scoreLevel");
                             element.remove();
                             matchedCards = [];
                             points = 0;
                             var cards = document.querySelectorAll('[name=card]');
                             for (const card of cards.values()) {
+                                //flipping cards back over
                                 card.classList.toggle("flipCard");
                                 card.classList.remove('flipped');
                             }
                             startPlaying();
                         }
                         function endGame() {
+                            //ending the game
                             pointsOverLevels += totalPoints;
                             const end = Date.now();
                             const textEnd = document.createElement("h2");
@@ -361,11 +384,13 @@
                             const element = document.getElementById("endGame");
                             element.appendChild(textEnd);
                             if (points >= loseGamePoints) {
+                                //user has lost
                                 const loseGame = document.createElement("h3");
                                 const loseGameNode = document.createTextNode("You lose!");
                                 loseGame.appendChild(loseGameNode);
                                 element.appendChild(loseGame);
                             } else {
+                                //user has won
                                 const winGame = document.createElement("h3");
                                 const winGameNode = document.createTextNode("You win!");
                                 winGame.appendChild(winGameNode);
@@ -378,6 +403,7 @@
                             
                             var sessionValid = sessionStorage.getItem("name") != null;  
                             if (sessionValid == true) {
+                                //storing scores in cookie
                                 var previousScores = document.cookie.split("; ").find((row) => row.startsWith("name="))?.split("=")[1];
                                 var username = sessionStorage.getItem("name");
                                 var previousScoresArray = previousScores.split(",");
@@ -406,10 +432,12 @@
                                     } else {
                                         bestScores += previousTotalScore;
                                     }
+                                    //storing values in cookie
                                     var userCookies = "name=" + bestScores;
                                     document.cookie = userCookies;
                                 }
-
+                                
+                                //telling the user their scores
                                 const textPoints = document.createElement("h4");
                                 const textPointsNode = document.createTextNode("Total points: " + totalPoints);
                                 textPoints.appendChild(textPointsNode);
@@ -419,15 +447,19 @@
                                 textTime.appendChild(textTimeNode)
                                 element.appendChild(textPoints);
                                 element.appendChild(textTime);
+                                //button to allow user to access leaderboard
                                 const submitButton = document.createElement('button');
                                 submitButton.innerText = 'Submit score';
                                 submitButton.onclick = function() {
+                                    //redirecting user to leaderboard
                                     location.href = "leaderboard.php";
                                 };
                                 element.appendChild(submitButton);
+                                //button to allow user to play agai
                                 const playAgainButton = document.createElement('button');
                                 playAgainButton.innerText = 'Play again';
                                 playAgainButton.onclick = function() {
+                                    //redirecting user to pairs (play again)
                                     location.href = "pairs.php";
                                 };
                                 element.appendChild(playAgainButton);
